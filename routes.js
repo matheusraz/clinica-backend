@@ -63,24 +63,52 @@ router.get('/listarHorarios', (req, res) => {
     const results = [];
 
     datesRange.forEach(date => {
-        banco.regras.dia.forEach(time => {
-            if(time.day === date) results.push({interval: time.interval});
+        let jsonDate = {
+            day: date,
+            intervals: []
+        };
+        banco.regras.data.forEach(time => {
+            if(time.day === date) {
+                jsonDate.intervals.push(time.interval);
+            }
         });
+        results.push(jsonDate);
     });
 
-    daysOfDates.forEach(day => {
+    daysOfDates.forEach((day, index) => {
+        const currentDate = datesRange[index];
+        let jsonDate = {
+            day: currentDate,
+            intervals: []
+        };
         banco.regras.semanal.forEach(diaSemana => {
-            if(diaSemana.days.split('|').includes(day)) results.push({interval: diaSemana.interval});
+            if(diaSemana.days.split('|').includes(day)) {
+                results[index].intervals.push(diaSemana.interval);
+            }
         });
     });
 
-    banco.regras.diario.forEach(dia => {
-        results.push(dia);
+    results.forEach(dateResult => {
+        banco.regras.diario.forEach(dia => {
+            dateResult.intervals.push(dia.interval);
+        });
     });
 
     res.json(responseMessage(['status', 'msg'], [1, results]));
 
 });
+
+const checkIfDateIsInResults = (lista, date) => {
+
+    let index = 0;
+    while(index < lista.length) {
+        if(date === lista[index].day) return index;
+        index++;
+    }
+
+    return false;
+
+}
 
 const returnDateInFormat = (date) => {
     return date.toISOString().replace(/T/, ' ').replace(/\..+/, '').split(' ')[0];

@@ -12,8 +12,8 @@
         "diario": [
             {
                 "interval": {
-                    "start": "9:30",
-                    "end": "10:10"
+                    "start": "13:30",
+                    "end": "14:00"
                 }
             }
         ],
@@ -21,8 +21,8 @@
             {
                 "days": "segunda|quarta",
                 "interval": {
-                    "start": "9:30",
-                    "end": "10:10"
+                    "start": "10:30",
+                    "end": "11:00"
                 }
             }
         ]
