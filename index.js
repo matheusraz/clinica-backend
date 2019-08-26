@@ -6,9 +6,9 @@ const bodyParser = require('body-parser');
 let port = 3000;
 
 server.use(cors());
-server.use(routes);
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({extended: true}));
+server.use(routes);
 
 server.listen(3000, (err) => {
     if(err) {

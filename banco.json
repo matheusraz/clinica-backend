@@ -1,0 +1,30 @@
+{
+    "regras": {
+        "data": [
+            {
+                "day": "25-06-2018",
+                "interval": {
+                    "start": "9:30",
+                    "end": "10:20"
+                }
+            }
+        ],
+        "diario": [
+            {
+                "interval": {
+                    "start": "9:30",
+                    "end": "10:10"
+                }
+            }
+        ],
+        "semanal": [
+            {
+                "days": "segunda|quarta",
+                "interval": {
+                    "start": "9:30",
+                    "end": "10:10"
+                }
+            }
+        ]
+    }
+}
