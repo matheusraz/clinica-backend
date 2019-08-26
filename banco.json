@@ -3,27 +3,46 @@
         "data": [
             {
                 "day": "25-06-2018",
-                "interval": {
-                    "start": "9:30",
-                    "end": "10:20"
-                }
+                "intervals": [
+                    {
+                        "start": "9:30",
+                        "end": "10:20"
+                    },
+                    {
+                        "start": "11:00",
+                        "end": "11:30"
+                    }
+                ]
             }
         ],
         "diario": [
             {
-                "interval": {
-                    "start": "13:30",
-                    "end": "14:00"
-                }
+                "start": "13:30",
+                "end": "14:00"
             }
         ],
         "semanal": [
             {
-                "days": "segunda|quarta",
-                "interval": {
-                    "start": "10:30",
-                    "end": "11:00"
-                }
+                "day": "segunda",
+                "intervals": [
+                    {
+                        "start": "10:30",
+                        "end": "11:00"
+                    },
+                    {
+                        "start": "11:10",
+                        "end": "11:40"
+                    }
+                ]
+            },
+            {
+                "day": "quarta",
+                "intervals": [
+                    {
+                        "start": "10:30",
+                        "end": "11:00"
+                    }
+                ]
             }
         ]
     }

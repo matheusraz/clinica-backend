@@ -21,12 +21,43 @@ router.get('/', (req, res) => {
 router.post('/cadastrarRegra', (req, res) => {
 
     try {
-        let arq = JSON.parse(fs.readFileSync('banco.json').toString());
+        let banco = JSON.parse(fs.readFileSync('banco.json').toString());
         let regra = req.body;
         let tipoRegra = regra.type;
         delete regra.type;
-        arq.regras[tipoRegra].push(regra);
-        fs.writeFileSync('banco.json', JSON.stringify(arq));
+
+        if(tipoRegra === 'data') {
+            const searchResult = checkInDB(banco.regras[tipoRegra], regra.day);
+            if(searchResult !== false) {
+                banco.regras[tipoRegra][searchResult].intervals.push(regra.interval);
+            } else {
+                let newDataRule = regra;
+                newDataRule.intervals = [regra.interval];
+                delete newDataRule.interval
+                banco.regras[tipoRegra].push(newDataRule);
+            }
+        } else if(tipoRegra === 'diario') {
+            banco.regras[tipoRegra].push(regra.interval);
+        } else {
+            let days = [regra.day];
+            if(regra.day.indexOf('|') > -1) {
+                days = regra.day.split('|');
+            }
+            days.forEach(day => {
+                let searchResult = checkInDB(banco.regras[tipoRegra], day);
+                if(searchResult !== false) {
+                    banco.regras[tipoRegra][searchResult].intervals.push(regra.interval);
+                } else {
+                    let newSemanalRule = {
+                        day: day,
+                        intervals: [regra.interval]
+                    };
+                    banco.regras[tipoRegra].push(newSemanalRule);
+                }
+            });
+        }
+
+        fs.writeFileSync('banco.json', JSON.stringify(banco));
         res.json(responseMessage(['status', 'msg'], [1, 'Regra Cadastrada com Sucesso!']))
     } catch(err) {
         console.log(err);
@@ -69,28 +100,23 @@ router.get('/listarHorarios', (req, res) => {
         };
         banco.regras.data.forEach(time => {
             if(time.day === date) {
-                jsonDate.intervals.push(time.interval);
+                jsonDate.intervals = jsonDate.intervals.concat(time.intervals);
             }
         });
         results.push(jsonDate);
     });
 
     daysOfDates.forEach((day, index) => {
-        const currentDate = datesRange[index];
-        let jsonDate = {
-            day: currentDate,
-            intervals: []
-        };
         banco.regras.semanal.forEach(diaSemana => {
-            if(diaSemana.days.split('|').includes(day)) {
-                results[index].intervals.push(diaSemana.interval);
+            if(diaSemana.day === day) {
+                results[index].intervals = results[index].intervals.concat(diaSemana.intervals);
             }
         });
     });
 
     results.forEach(dateResult => {
         banco.regras.diario.forEach(dia => {
-            dateResult.intervals.push(dia.interval);
+            dateResult.intervals.push(dia);
         });
     });
 
@@ -98,11 +124,11 @@ router.get('/listarHorarios', (req, res) => {
 
 });
 
-const checkIfDateIsInResults = (lista, date) => {
+const checkInDB = (lista, value) => {
 
     let index = 0;
     while(index < lista.length) {
-        if(date === lista[index].day) return index;
+        if(value === lista[index].day) return index;
         index++;
     }
 
