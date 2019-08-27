@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const fs = require('fs');
 
-
 router.get('/', (req, res) => {
     res.json(responseMessage(['status', 'msg'], ['1', 'Funfou!']));
 });
@@ -14,34 +13,49 @@ router.post('/cadastrarRegra', (req, res) => {
         let tipoRegra = regra.type;
         delete regra.type;
 
+        let interval = {
+            id: banco.currentId,
+            start: regra.interval.start,
+            end: regra.interval.end,
+        }
+
         if(tipoRegra === 'data') {
             const searchResult = checkInDB(banco.regras[tipoRegra], regra.day);
             if(searchResult !== false) {
-                banco.regras[tipoRegra][searchResult].intervals.push(regra.interval);
+                banco.regras[tipoRegra][searchResult].intervals.push(interval);
             } else {
-                let newDataRule = regra;
-                newDataRule.intervals = [regra.interval];
-                delete newDataRule.interval
+                let newDataRule = {
+                    day: regra.day,
+                    intervals: [interval],
+                }
                 banco.regras[tipoRegra].push(newDataRule);
             }
+            banco.currentId++;
         } else if(tipoRegra === 'diario') {
-            banco.regras[tipoRegra].push(regra.interval);
+            banco.regras[tipoRegra].push(interval);
+            banco.currentId++;
         } else {
             let days = [regra.day];
             if(regra.day.indexOf('|') > -1) {
                 days = regra.day.split('|');
             }
             days.forEach(day => {
+                interval = {
+                    id: banco.currentId,
+                    start: regra.interval.start,
+                    end: regra.interval.end,
+                }
                 let searchResult = checkInDB(banco.regras[tipoRegra], day);
                 if(searchResult !== false) {
-                    banco.regras[tipoRegra][searchResult].intervals.push(regra.interval);
+                    banco.regras[tipoRegra][searchResult].intervals.push(interval);
                 } else {
                     let newSemanalRule = {
                         day: day,
-                        intervals: [regra.interval]
+                        intervals: [interval]
                     };
                     banco.regras[tipoRegra].push(newSemanalRule);
                 }
+                banco.currentId++
             });
         }
 
@@ -56,7 +70,27 @@ router.post('/cadastrarRegra', (req, res) => {
 
 router.delete('/deletarRegra', (req, res) => {
 
+    let banco = JSON.parse(fs.readFileSync('banco.json').toString());
 
+    const id = req.body.id;
+
+    const deleteInfos = findHorarioById(id, banco);
+
+    if(deleteInfos !== false) {
+        if(deleteInfos.length === 3) {
+            if(banco.regras[deleteInfos[0]][deleteInfos[1]].intervals.length === 1) {
+                banco.regras[deleteInfos[0]].splice(deleteInfos[1],1);
+            } else {
+                banco.regras[deleteInfos[0]][deleteInfos[1]].intervals.splice(deleteInfos[2], 1);
+            }
+        } else {
+            banco.regras[deleteInfos[0]].splice(deleteInfos[1],1);
+        }
+        fs.writeFileSync('banco.json', JSON.stringify(banco));
+        res.json({status: 1, msg: 'regra deletada com sucesso!'});
+    } else {
+        res.json({status: 0, msg: 'Não foi possível encontrar esta regra :('});
+    }
 });
 
 router.get('/listarRegras', (req, res) => {
@@ -112,6 +146,46 @@ router.get('/listarHorarios', (req, res) => {
 
 });
 
+const findHorarioById = (id, banco) => {
+
+    const regras = ['data', 'diario', 'semanal'];
+
+    let retorno = false
+
+    regras.forEach(regra => {
+        if(regra !== 'diario'){
+            let i = 0;
+            let achou = false;
+            while(!achou && i < banco.regras[regra].length){
+                let index = 0;
+                let value = banco.regras[regra][i];
+                while(!achou && index < value.intervals.length) {
+                    interval = value.intervals[index];
+                    if(interval.id === id) {
+                        retorno = [regra, i, index];
+                        achou = true;
+                    }
+                    index++;
+                }
+                i++;
+            }
+        } else {
+            let index = 0;
+            let achou = false;
+            while(!achou && index < banco.regras[regra].length) {
+                diario = banco.regras[regra][index];
+                if(diario.id === id) {
+                    retorno = [regra, index];
+                    achou = true;
+                }
+                index++;
+            }
+        }
+    });
+
+    return retorno;
+}
+
 const checkInDB = (lista, value) => {
 
     let index = 0;
@@ -163,7 +237,7 @@ const getDates = (startDate, stopDate) => {
     return dateArray;
 }
 
-responseMessage = (keys, values) => {
+const responseMessage = (keys, values) => {
     try {
         let response = {};
         for(let i = 0; i < keys.length; ++i) {
@@ -175,6 +249,8 @@ responseMessage = (keys, values) => {
         console.log(err.stack);
     }
 }
+
+
 
 
 module.exports = router;

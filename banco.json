@@ -1,49 +1,8 @@
 {
+    "currentId": 1,
     "regras": {
-        "data": [
-            {
-                "day": "25-06-2018",
-                "intervals": [
-                    {
-                        "start": "9:30",
-                        "end": "10:20"
-                    },
-                    {
-                        "start": "11:00",
-                        "end": "11:30"
-                    }
-                ]
-            }
-        ],
-        "diario": [
-            {
-                "start": "13:30",
-                "end": "14:00"
-            }
-        ],
-        "semanal": [
-            {
-                "day": "segunda",
-                "intervals": [
-                    {
-                        "start": "10:30",
-                        "end": "11:00"
-                    },
-                    {
-                        "start": "11:10",
-                        "end": "11:40"
-                    }
-                ]
-            },
-            {
-                "day": "quarta",
-                "intervals": [
-                    {
-                        "start": "10:30",
-                        "end": "11:00"
-                    }
-                ]
-            }
-        ]
+        "data": [],
+        "diario": [],
+        "semanal": []
     }
 }
