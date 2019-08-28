@@ -1,0 +1,207 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "Clinica Backend",
+      "description": "Documentação para API de cadastros e listagem de horarios em uma clínica."
+    },
+    "host": "localhost:3000",
+    "basePath": "",
+    "tags": [
+      {
+        "name": "Regras"
+      },
+      {
+        "name": "Horarios"
+      }
+    ],
+    "schemes": [
+      "http"
+    ],
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "paths": {
+      "/listarRegras": {
+        "get": {
+          "tags": [
+            "Regras"
+          ],
+          "summary": "Retorna todas as regras presentes no banco",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "type": "array",
+                "$ref": "#/definitions/Horario"
+              }
+            }
+          }
+        }
+      },
+      "/cadastrarRegra": {
+        "post": {
+            "tags": [
+              "Regras"
+            ],
+            "description": "Cria uma nova regra por data no banco",
+            "parameters": [
+              {
+                "name": "RegraPorData",
+                "in": "body",
+                "description": "Regra válida para uma data específica",
+                "schema": {
+                  "$ref": "#/definitions/RegraData"
+                }
+              },
+              {
+                "name": "RegraDiaria",
+                "in": "body",
+                "description": "Regra válida para todos os dias",
+                "schema": {
+                  "$ref": "#/definitions/RegraDiaria"
+                }
+              },
+              {
+                "name": "RegraSemanal",
+                "in": "body",
+                "description": "Regra válida para um ou mais dias específicos por semana",
+                "schema": {
+                  "$ref": "#/definitions/RegraData"
+                }
+              }
+            ],
+            "produces": [
+              "application/json"
+            ],
+            "responses": {
+              "200": {
+                "description": "Nova regra é criada",
+                "schema": {
+                  "$ref": "#/definitions/RegraCadastradaSucesso"
+                }
+              }
+            }
+          }
+      },
+      "/deletarRegra/{id}": {
+        "delete": {
+            "summary": "Deleta uma regra (ou horário de uma regra caso haja mais de um para uma mesma regra) a partir de seu ID ",
+            "tags": [
+              "Regras"
+            ],
+            "responses": {
+              "200": {
+                "description": "Regra é deletada",
+                "schema": {
+                  "$ref": "#/definitions/RegraCadastradaSucesso"
+                }
+              }
+            }
+          }
+      },
+      "/listarHorarios": {
+        "get": {
+          "tags": [
+            "Horarios"
+          ],
+          "summary": "Retorna todos os horários presentes no banco",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "type": "array",
+                "$ref": "#/definitions/Horario"
+              }
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+        "Horario": {
+          "properties": {
+            "id": {
+              "type": "number",
+              "uniqueItems": true
+            },
+            "start": {
+              "type": "string"
+            },
+            "end": {
+              "type": "string"
+            }
+          }
+        },
+        "RegraDiaria": {
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "interval": {
+                    "properties": {
+                        "start": {
+                            "type": "string"
+                        },
+                        "end": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "RegraData": {
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "interval": {
+                    "properties": {
+                        "start": {
+                            "type": "string"
+                        },
+                        "end": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "RegraSemanal": {
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "day": {
+                    "type": "string"
+                },
+                "interval": {
+                    "properties": {
+                        "start": {
+                            "type": "string"
+                        },
+                        "end": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "RegraCadastradaSucesso": {
+            "properties": {
+                "status": {
+                    "type": "integer"
+                },
+                "msg": {
+                    "type": "string"
+                }
+            }
+        }
+      }
+  }

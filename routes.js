@@ -68,11 +68,11 @@ router.post('/cadastrarRegra', (req, res) => {
 
 });
 
-router.delete('/deletarRegra', (req, res) => {
+router.delete('/deletarRegra/:id', (req, res) => {
 
     let banco = JSON.parse(fs.readFileSync('banco.json').toString());
 
-    const id = req.body.id;
+    const id = parseInt(req.params.id);
 
     const deleteInfos = findHorarioById(id, banco);
 
