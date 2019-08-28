@@ -10,3 +10,6 @@ Author: Matheus Raz (mrol)
 
 &nbsp;
 3 - [Postman Collection](https://www.getpostman.com/collections/15f4783c43962da62bba)
+
+&nbsp;
+4 - Para acessar documentação basta rodar o servidor e acessar http://localhost:3000/documentacao no browser :)
